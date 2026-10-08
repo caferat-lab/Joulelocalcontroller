@@ -92,12 +92,12 @@ object JouleProto {
     feedId: Long,
     sequence: Long
 ): ByteArray {
+    // Joule MANUAL program:
+    // field 1 = target temperature
+    // field 5 = ProgramType.MANUAL (0)
+    // cook time is not included in the manual BLE start message.
+
     var program = fieldFloat(1, targetC)
-
-    // Cook time is expressed in seconds.
-    program += fieldVarint(2, cookTimeSeconds)
-
-    // Manual program.
     program += fieldVarint(5, 0)
 
     var request = fieldBytes(1, program)
@@ -112,7 +112,9 @@ object JouleProto {
 
     return envelope(FIELD_START_PROGRAM, request)
 }
-
+fun identifyCirculator(): ByteArray =
+    envelope(152, ByteArray(0))
+    
     fun stopCook(feedId: Long, sequence: Long): ByteArray {
         var request = ByteArray(0)
         if (feedId != 0L) request += fieldVarint(2, feedId)
