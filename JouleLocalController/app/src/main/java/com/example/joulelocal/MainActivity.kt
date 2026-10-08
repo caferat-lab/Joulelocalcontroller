@@ -80,8 +80,6 @@ class MainActivity : Activity() {
 }
 
 private fun buildUi() {
-
-    private fun buildUi() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(28, 32, 28, 28)
