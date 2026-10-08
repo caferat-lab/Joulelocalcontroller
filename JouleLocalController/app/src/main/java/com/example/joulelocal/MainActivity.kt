@@ -81,6 +81,7 @@ class MainActivity : Activity() {
 stop.setOnClickListener {
         joule.stopCook(lastFeed, lastSequence)
 }   
+}
     
 private fun buildUi() {
         val root = LinearLayout(this).apply {
