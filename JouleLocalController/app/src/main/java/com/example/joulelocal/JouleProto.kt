@@ -86,16 +86,32 @@ object JouleProto {
     fun beginLiveFeed(feedId: Long = 1): ByteArray =
         envelope(FIELD_BEGIN_LIVE_FEED, fieldVarint(1, feedId))
 
-    fun startCook(targetC: Float, feedId: Long, sequence: Long): ByteArray {
-        // Matches the compact manual-program structure documented by the
-        // hardware-validated community integration.
-        var program = fieldFloat(1, targetC)
-        program += fieldVarint(5, 0) // MANUAL
-        var request = fieldBytes(1, program)
-        if (feedId != 0L) request += fieldVarint(2, feedId)
-        if (sequence != 0L) request += fieldVarint(3, sequence)
-        return envelope(FIELD_START_PROGRAM, request)
+    fun startCook(
+    targetC: Float,
+    cookTimeSeconds: Long,
+    feedId: Long,
+    sequence: Long
+): ByteArray {
+    var program = fieldFloat(1, targetC)
+
+    // Cook time is expressed in seconds.
+    program += fieldVarint(2, cookTimeSeconds)
+
+    // Manual program.
+    program += fieldVarint(5, 0)
+
+    var request = fieldBytes(1, program)
+
+    if (feedId != 0L) {
+        request += fieldVarint(2, feedId)
     }
+
+    if (sequence != 0L) {
+        request += fieldVarint(3, sequence)
+    }
+
+    return envelope(FIELD_START_PROGRAM, request)
+}
 
     fun stopCook(feedId: Long, sequence: Long): ByteArray {
         var request = ByteArray(0)
@@ -201,3 +217,4 @@ object JouleProto {
         return Decoded(key, auth, point, start, stop)
     }
 }
+Add cook duration to Joule start command
