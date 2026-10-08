@@ -217,4 +217,3 @@ object JouleProto {
         return Decoded(key, auth, point, start, stop)
     }
 }
-Add cook duration to Joule start command
