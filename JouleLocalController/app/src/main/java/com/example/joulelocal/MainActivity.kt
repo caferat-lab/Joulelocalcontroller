@@ -54,17 +54,29 @@ class MainActivity : Activity() {
             requestBluetoothPermissionsThenScan()
         }
         start.setOnClickListener {
-            val t = target.text.toString().toFloatOrNull()
-            if (t == null || t !in 0f..100f) {
-                status.text = "Enter a target temperature from 0–100°C."
-                return@setOnClickListener
-            }
-            joule.startCook(t, lastFeed, lastSequence)
-        }
-        stop.setOnClickListener {
-            joule.stopCook(lastFeed, lastSequence)
-        }
+    val t = target.text.toString().toFloatOrNull()
+    if (t == null || t !in 0f..100f) {
+        status.text = "Enter a target temperature from 0–100°C."
+        return@setOnClickListener
     }
+
+    val h = hours.text.toString().toLongOrNull() ?: 0L
+    val m = minutes.text.toString().toLongOrNull() ?: 0L
+
+    if (h < 0 || m < 0 || m > 59) {
+        status.text = "Enter a valid cooking time."
+        return@setOnClickListener
+    }
+
+    val cookTimeSeconds = h * 3600L + m * 60L
+
+    joule.startCook(
+        t,
+        cookTimeSeconds,
+        lastFeed,
+        lastSequence
+    )
+}
 
     private fun buildUi() {
         val root = LinearLayout(this).apply {
@@ -109,7 +121,7 @@ class MainActivity : Activity() {
         }
         root.addView(target)
 
-        val timerLabel = tv("Timer (display only in this first build)", 14f)
+        val timerLabel = tv("Cooking time", 14f)
         root.addView(timerLabel)
 
         val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
