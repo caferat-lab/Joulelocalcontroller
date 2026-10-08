@@ -39,7 +39,19 @@ class JouleBleManager(
     private var scanCallback: ScanCallback? = null
     private var connected = false
     private var liveFeedStarted = false
-    private val prefs = context.getSharedPreferences("joule", Context.MODE_PRIVATE)
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val temperaturePollRunnable = object : Runnable {
+        override fun run() {
+            if (connected) {
+                send(JouleProto.beginLiveFeed(1))
+                handler.postDelayed(this, 5000)
+        }
+    }
+}
+
+private val prefs = context.getSharedPreferences("joule", Context.MODE_PRIVATE)
 
     private fun hasConnect(): Boolean =
         Build.VERSION.SDK_INT < 31 || ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
@@ -178,6 +190,15 @@ class JouleBleManager(
                         send(JouleProto.beginLiveFeed(1))
                     } else onStatus("Joule rejected the authorization key (result $result).")
                 }
+                decoded.startResult?.let { result ->
+                    if (result == 0L) {
+                        onStatus("Joule accepted the cooking command. Monitoring temperature…")
+                        handler.removeCallbacks(temperaturePollRunnable)
+                        handler.postDelayed(temperaturePollRunnable, 1000)
+                    } else {
+                        onStatus("Joule rejected the cooking command (result $result).")
+                    }
+                }
                 decoded.dataPoint?.let { p ->
                     onTemperature(p.bathTempC, p.feedId, p.sequence)
                     if (!liveFeedStarted) {
@@ -269,10 +290,15 @@ fun startCook(
 
     @SuppressLint("MissingPermission")
     fun stopCook(feedId: Long, sequence: Long) {
-        if (!connected) { onStatus("Not connected."); return }
-        onStatus("Stopping cook…")
-        send(JouleProto.stopCook(feedId, sequence))
+    if (!connected) {
+        onStatus("Not connected.")
+        return
     }
+
+    handler.removeCallbacks(temperaturePollRunnable)
+    onStatus("Stopping cook…")
+    send(JouleProto.stopCook(feedId, sequence))
+}
 
     @SuppressLint("MissingPermission")
     fun disconnect() {
