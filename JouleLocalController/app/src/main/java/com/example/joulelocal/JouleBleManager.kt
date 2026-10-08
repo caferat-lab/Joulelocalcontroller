@@ -238,11 +238,21 @@ class JouleBleManager(
     }
 
     @SuppressLint("MissingPermission")
-    fun startCook(targetC: Float, feedId: Long, sequence: Long) {
-        if (!connected) { onStatus("Not connected."); return }
-        onStatus("Starting cook at %.1f°C…".format(targetC))
-        send(JouleProto.startCook(targetC, feedId, sequence))
-    }
+    fun startCook(
+    targetC: Float,
+    cookTimeSeconds: Long,
+    feedId: Long,
+    sequence: Long
+) {
+    send(
+        JouleProto.startCook(
+            targetC,
+            cookTimeSeconds,
+            feedId,
+            sequence
+        )
+    )
+}
 
     @SuppressLint("MissingPermission")
     fun stopCook(feedId: Long, sequence: Long) {
@@ -266,3 +276,4 @@ class JouleBleManager(
         }
     }
 }
+Pass cook duration to Joule start command
