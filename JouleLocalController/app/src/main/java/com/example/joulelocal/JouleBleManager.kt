@@ -276,4 +276,3 @@ class JouleBleManager(
         }
     }
 }
-Pass cook duration to Joule start command
