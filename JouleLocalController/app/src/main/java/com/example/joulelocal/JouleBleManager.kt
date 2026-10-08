@@ -238,20 +238,34 @@ class JouleBleManager(
     }
 
     @SuppressLint("MissingPermission")
-    fun startCook(
+    @SuppressLint("MissingPermission")
+fun startCook(
     targetC: Float,
     cookTimeSeconds: Long,
     feedId: Long,
     sequence: Long
 ) {
-    send(
-        JouleProto.startCook(
-            targetC,
-            cookTimeSeconds,
-            feedId,
-            sequence
+    if (!connected) {
+        onStatus("Not connected.")
+        return
+    }
+
+    onStatus("Preparing Joule to start…")
+
+    // The Joule expects an identify command before starting a program.
+    send(JouleProto.identifyCirculator())
+
+    Handler(Looper.getMainLooper()).postDelayed({
+        onStatus("Sending cooking command…")
+        send(
+            JouleProto.startCook(
+                targetC,
+                cookTimeSeconds,
+                feedId,
+                sequence
+            )
         )
-    )
+    }, 500)
 }
 
     @SuppressLint("MissingPermission")
