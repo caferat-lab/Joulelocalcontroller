@@ -137,7 +137,7 @@ class JouleBleManager(
         }
 
         override fun onDescriptorWrite(g: BluetoothGatt, descriptor: BluetoothGattDescriptor, status: Int) {
-            if (descriptor.characteristic.uuid.equals(UUID.fromString(NOTIFY), true)) {
+            if (descriptor.characteristic.uuid == UUID.fromString(NOTIFY)) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     authenticateOrStartFeed()
                 } else onStatus("Could not enable Joule data notifications: $status")
@@ -149,7 +149,7 @@ class JouleBleManager(
             characteristic: BluetoothGattCharacteristic,
             value: ByteArray
         ) {
-            if (characteristic.uuid.equals(UUID.fromString(NOTIFY), true)) {
+            if (characteristic.uuid == UUID.fromString(NOTIFY)) {
                 // 4325 is only a "data ready" signal. Read the actual protobuf from 4323.
                 g.readCharacteristic(readChar)
             }
@@ -164,7 +164,7 @@ class JouleBleManager(
 
         override fun onCharacteristicRead(g: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
             if (status != BluetoothGatt.GATT_SUCCESS) return
-            if (!characteristic.uuid.equals(UUID.fromString(READ), true)) return
+            if (characteristic.uuid != UUID.fromString(READ)) return
             try {
                 val decoded = JouleProto.decodeStream(value)
                 decoded.secretKey?.let {
