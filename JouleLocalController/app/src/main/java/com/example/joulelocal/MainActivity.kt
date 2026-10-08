@@ -59,10 +59,6 @@ class MainActivity : Activity() {
         status.text = "Enter a target temperature from 0–100°C."
         return@setOnClickListener
     }
-
-    stop.setOnClickListener {
-    joule.stopCook(lastFeed, lastSequence)
-    }
     
     val h = hours.text.toString().toLongOrNull() ?: 0L
     val m = minutes.text.toString().toLongOrNull() ?: 0L
@@ -80,9 +76,12 @@ class MainActivity : Activity() {
         lastFeed,
         lastSequence
     )
-    }
 }
 
+stop.setOnClickListener {
+        joule.stopCook(lastFeed, lastSequence)
+}   
+    
 private fun buildUi() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
