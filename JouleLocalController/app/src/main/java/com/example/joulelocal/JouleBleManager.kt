@@ -238,7 +238,6 @@ class JouleBleManager(
     }
 
     @SuppressLint("MissingPermission")
-    @SuppressLint("MissingPermission")
 fun startCook(
     targetC: Float,
     cookTimeSeconds: Long,
