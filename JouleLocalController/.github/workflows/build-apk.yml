@@ -1,0 +1,35 @@
+name: Build Joule APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Make Gradle executable
+        working-directory: JouleLocalController
+        run: chmod +x gradlew
+
+      - name: Build APK
+        working-directory: JouleLocalController
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JouleLocalController-debug
+          path: JouleLocalController/app/build/outputs/apk/debug/app-debug.apk
