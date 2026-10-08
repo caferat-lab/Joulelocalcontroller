@@ -106,7 +106,7 @@ class JouleBleManager(
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 connected = true
                 onStatus("Connected. Discovering services…")
-                g.requestMtu(23)
+                g.requestMtu(185)
                 g.discoverServices()
             } else {
                 connected = false
