@@ -76,7 +76,10 @@ class MainActivity : Activity() {
         lastFeed,
         lastSequence
     )
+    }
 }
+
+private fun buildUi() {
 
     private fun buildUi() {
         val root = LinearLayout(this).apply {
