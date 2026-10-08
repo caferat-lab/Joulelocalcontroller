@@ -60,6 +60,10 @@ class MainActivity : Activity() {
         return@setOnClickListener
     }
 
+    stop.setOnClickListener {
+    joule.stopCook(lastFeed, lastSequence)
+    }
+    
     val h = hours.text.toString().toLongOrNull() ?: 0L
     val m = minutes.text.toString().toLongOrNull() ?: 0L
 
